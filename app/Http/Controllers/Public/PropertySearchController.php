@@ -3,15 +3,16 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PropertySearchResource;
 use App\Models\Geoobject;
 use App\Models\Property;
 use Illuminate\Http\Request;
 
 class PropertySearchController extends Controller
 {
-    public function __invoke(Request $request): \Illuminate\Database\Eloquent\Collection
+    public function __invoke(Request $request): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
     {
-        return Property::with([
+        $properties = Property::with([
             'city',
             'apartments.apartment_type',
             'apartments.rooms.beds.bed_type'
@@ -39,9 +40,14 @@ class PropertySearchController extends Controller
             ->when($request->adults && $request->children, function ($query) use ($request) {
                 $query->withWhereHas('apartments', function ($query) use ($request) {
                     $query->where('capacity_adults', '>=', $request->adults)
-                        ->where('capacity_children', '>=', $request->children);
+                        ->where('capacity_children', '>=', $request->children)
+                        ->orderBy('capacity_adults')
+                        ->orderBy('capacity_children')
+                        ->take(1);
                 });
             })
             ->get();
+
+        return PropertySearchResource::collection($properties);
     }
 }
