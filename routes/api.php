@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Public;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,8 +24,15 @@ Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('user/bookings', [\App\Http\Controllers\User\BookingController::class, 'index']);
 });
 
-Route::get('search', \App\Http\Controllers\Public\PropertySearchController::class);
+Route::get(
+    'search',
+    Public\PropertySearchController::class
+);
 Route::get(
     'properties/{property}',
-    \App\Http\Controllers\Public\PropertyController::class
+    Public\PropertyController::class
+);
+Route::get(
+    'apartments/{apartment}',
+    Public\ApartmentController::class
 );
