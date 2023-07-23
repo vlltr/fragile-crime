@@ -11,7 +11,11 @@ class PropertySearchController extends Controller
 {
     public function __invoke(Request $request): \Illuminate\Database\Eloquent\Collection
     {
-        return Property::with('city')
+        return Property::with([
+            'city',
+            'apartments.apartment_type',
+            'apartments.rooms.beds.bed_type'
+        ])
             ->when($request->city, function ($query) use ($request) {
                 $query->where('city_id', $request->city);
             })
